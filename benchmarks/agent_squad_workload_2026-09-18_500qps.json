@@ -1,0 +1,309 @@
+{
+  "backends": {
+    "aerospike": {
+      "aerospike_append_one": {
+        "achieved_qps": 499.9226550163441,
+        "attempted_calls": 15000,
+        "failures": 0,
+        "response_ms": {
+          "p50": 1.737,
+          "p90": 2.392,
+          "p95": 2.589,
+          "p99": 3.342,
+          "p99_9": 20.185
+        },
+        "service_ms": {
+          "p50": 1.638,
+          "p90": 1.999,
+          "p95": 2.13,
+          "p99": 2.818,
+          "p99_9": 8.258
+        },
+        "successful_calls": 15000
+      },
+      "aerospike_append_pair": {
+        "achieved_qps": 499.9208965333638,
+        "attempted_calls": 15000,
+        "failures": 0,
+        "response_ms": {
+          "p50": 1.982,
+          "p90": 2.949,
+          "p95": 3.178,
+          "p99": 3.899,
+          "p99_9": 24.379
+        },
+        "service_ms": {
+          "p50": 1.72,
+          "p90": 2.081,
+          "p95": 2.195,
+          "p99": 2.982,
+          "p99_9": 9.83
+        },
+        "successful_calls": 15000
+      },
+      "aerospike_contended": {
+        "achieved_qps": 499.9193081577821,
+        "attempted_calls": 15000,
+        "failures": 0,
+        "response_ms": {
+          "p50": 1.311,
+          "p90": 2.13,
+          "p95": 2.425,
+          "p99": 3.146,
+          "p99_9": 20.447
+        },
+        "service_ms": {
+          "p50": 1.065,
+          "p90": 1.393,
+          "p95": 1.507,
+          "p99": 1.917,
+          "p99_9": 5.046
+        },
+        "successful_calls": 15000
+      },
+      "aerospike_fetch": {
+        "achieved_qps": 499.90791764477734,
+        "attempted_calls": 15000,
+        "failures": 0,
+        "response_ms": {
+          "p50": 0.967,
+          "p90": 1.524,
+          "p95": 1.688,
+          "p99": 2.392,
+          "p99_9": 3.015
+        },
+        "service_ms": {
+          "p50": 0.606,
+          "p90": 0.77,
+          "p95": 0.836,
+          "p99": 1.04,
+          "p99_9": 1.638
+        },
+        "successful_calls": 15000
+      },
+      "aerospike_fetch_all": {
+        "achieved_qps": 499.91268400083067,
+        "attempted_calls": 15000,
+        "failures": 0,
+        "response_ms": {
+          "p50": 1.475,
+          "p90": 2.687,
+          "p95": 3.178,
+          "p99": 3.867,
+          "p99_9": 31.719
+        },
+        "service_ms": {
+          "p50": 1.18,
+          "p90": 1.655,
+          "p95": 1.819,
+          "p99": 2.228,
+          "p99_9": 31.195
+        },
+        "successful_calls": 15000
+      },
+      "aerospike_mixed": {
+        "achieved_qps": 499.90134030464634,
+        "attempted_calls": 15000,
+        "failures": 0,
+        "response_ms": {
+          "p50": 1.737,
+          "p90": 2.982,
+          "p95": 3.441,
+          "p99": 4.325,
+          "p99_9": 13.369
+        },
+        "service_ms": {
+          "p50": 1.573,
+          "p90": 2.261,
+          "p95": 2.425,
+          "p99": 2.916,
+          "p99_9": 4.26
+        },
+        "successful_calls": 15000
+      }
+    },
+    "dynamodb": {
+      "dynamodb_append_one": {
+        "achieved_qps": 499.6073093542978,
+        "attempted_calls": 15000,
+        "failures": 0,
+        "response_ms": {
+          "p50": 67.109,
+          "p90": 169.869,
+          "p95": 188.744,
+          "p99": 211.812,
+          "p99_9": 224.395
+        },
+        "service_ms": {
+          "p50": 1.704,
+          "p90": 2.72,
+          "p95": 2.884,
+          "p99": 3.244,
+          "p99_9": 4.325
+        },
+        "successful_calls": 15000
+      },
+      "dynamodb_append_pair": {
+        "achieved_qps": 499.7809619640432,
+        "attempted_calls": 15000,
+        "failures": 0,
+        "response_ms": {
+          "p50": 85.983,
+          "p90": 205.521,
+          "p95": 232.784,
+          "p99": 285.213,
+          "p99_9": 301.99
+        },
+        "service_ms": {
+          "p50": 1.72,
+          "p90": 2.785,
+          "p95": 2.982,
+          "p99": 3.375,
+          "p99_9": 4.26
+        },
+        "successful_calls": 15000
+      },
+      "dynamodb_contended": {
+        "achieved_qps": 408.7066445044951,
+        "attempted_calls": 15000,
+        "failures": 0,
+        "response_ms": {
+          "p50": 3355.443,
+          "p90": 6106.907,
+          "p95": 6308.233,
+          "p99": 6710.886,
+          "p99_9": 6710.886
+        },
+        "service_ms": {
+          "p50": 2.195,
+          "p90": 3.506,
+          "p95": 3.768,
+          "p99": 4.26,
+          "p99_9": 5.505
+        },
+        "successful_calls": 15000
+      },
+      "dynamodb_fetch": {
+        "achieved_qps": 499.8867451091527,
+        "attempted_calls": 15000,
+        "failures": 0,
+        "response_ms": {
+          "p50": 4.719,
+          "p90": 8.126,
+          "p95": 9.175,
+          "p99": 13.369,
+          "p99_9": 24.904
+        },
+        "service_ms": {
+          "p50": 1.409,
+          "p90": 1.753,
+          "p95": 1.901,
+          "p99": 2.228,
+          "p99_9": 2.916
+        },
+        "successful_calls": 15000
+      },
+      "dynamodb_fetch_all": {
+        "achieved_qps": 499.6035014883399,
+        "attempted_calls": 15000,
+        "failures": 0,
+        "response_ms": {
+          "p50": 84.935,
+          "p90": 171.966,
+          "p95": 197.132,
+          "p99": 228.59,
+          "p99_9": 247.464
+        },
+        "service_ms": {
+          "p50": 1.72,
+          "p90": 2.621,
+          "p95": 2.851,
+          "p99": 3.211,
+          "p99_9": 5.177
+        },
+        "successful_calls": 15000
+      },
+      "dynamodb_mixed": {
+        "achieved_qps": 499.812463416333,
+        "attempted_calls": 15000,
+        "failures": 0,
+        "response_ms": {
+          "p50": 24.379,
+          "p90": 92.275,
+          "p95": 108.003,
+          "p99": 126.878,
+          "p99_9": 146.801
+        },
+        "service_ms": {
+          "p50": 1.671,
+          "p90": 2.753,
+          "p95": 2.949,
+          "p99": 3.277,
+          "p99_9": 4.194
+        },
+        "successful_calls": 15000
+      }
+    }
+  },
+  "metadata": {
+    "adapter_semantics": {
+      "aerospike": "atomic server-side append and trim",
+      "dynamodb": "whole-conversation read-modify-write"
+    },
+    "comparison": "local as-shipped integration",
+    "correctness": {
+      "aerospike": {
+        "accepted": 37676,
+        "ambiguous": 0,
+        "attempted": 52739,
+        "duplicate": 0,
+        "failed": 0,
+        "incorrectly_attributed": 0,
+        "missing": 0,
+        "out_of_order": 0,
+        "rejected": 15063
+      },
+      "dynamodb": {
+        "accepted": 52740,
+        "ambiguous": 0,
+        "attempted": 52740,
+        "duplicate": 0,
+        "failed": 0,
+        "incorrectly_attributed": 0,
+        "missing": 15054,
+        "out_of_order": 9,
+        "rejected": 0
+      }
+    },
+    "dynamodb": {
+      "consistent_reads": false,
+      "endpoint_url": "http://127.0.0.1:8000",
+      "region": "us-east-1",
+      "table_name": "agent-squad-benchmark"
+    },
+    "dynamodb_local_limitations": "does not reproduce managed networking, partitioning, durability, adaptive capacity, throttling, consumed capacity, or service-side latency",
+    "environment": "local",
+    "publishable": false,
+    "versions": {
+      "agent-squad": "1.1.3",
+      "agent-squad-aerospike": "0.1.0",
+      "ai-ecosystem-benchmark": "0.0.6"
+    },
+    "workload": {
+      "agents_per_session": 4,
+      "duration_seconds": 30,
+      "history_size": 10,
+      "key_pool_size": 1024,
+      "max_in_flight": 256,
+      "payload_bytes": 256,
+      "qps": 500,
+      "run_id": "20260918-fixed-500qps",
+      "seed": 20260915,
+      "ttl_seconds": null,
+      "warmup_seconds": 1
+    }
+  },
+  "runtime_seconds": 30,
+  "schema_version": 1,
+  "target_qps": 500
+}
