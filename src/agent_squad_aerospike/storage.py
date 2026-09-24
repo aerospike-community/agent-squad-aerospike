@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 import asyncio
 import time
@@ -43,7 +42,7 @@ class AerospikeChatStorage(ChatStorage):
         config: AerospikeConfig | None = None,
         *,
         client_factory: Callable[..., Any] | None = None,
-    ) -> AerospikeChatStorage:
+    ) -> "AerospikeChatStorage":
         resolved = config or AerospikeConfig()
         if client_factory is not None:
             client = client_factory(",".join(resolved.seeds))
@@ -75,7 +74,7 @@ class AerospikeChatStorage(ChatStorage):
         if self._owned_client is not None:
             await self._owned_client.close()
 
-    async def __aenter__(self) -> AerospikeChatStorage:
+    async def __aenter__(self) -> "AerospikeChatStorage":
         return self
 
     async def __aexit__(self, *args: object) -> None:
@@ -138,7 +137,6 @@ class AerospikeChatStorage(ChatStorage):
             new_message,
             role=role,
             timestamp=timestamp,
-            max_bytes=self._config.max_message_bytes,
         )
         entry = {"role": role, "timestamp": timestamp, "payload": payload}
         await self._ensure_membership(user_id, session_id, agent_id, timestamp)
@@ -182,7 +180,6 @@ class AerospikeChatStorage(ChatStorage):
                         message,
                         role=role,
                         timestamp=timestamp,
-                        max_bytes=self._config.max_message_bytes,
                     ),
                 }
             )
@@ -246,16 +243,20 @@ class AerospikeChatStorage(ChatStorage):
         agents = list(dict.fromkeys(directory_result.record.bins.get("agents", {})))
         if not agents:
             return []
-        keys = [
-            DataSet.of(self._config.namespace, self._config.conversation_set).id(
+        keys: list[Any] = []
+        key_to_agent: dict[tuple[str, str, str], str] = {}
+        for agent_id in agents:
+            key = DataSet.of(self._config.namespace, self._config.conversation_set).id(
                 conversation_key(user_id, session_id, agent_id)
             )
-            for agent_id in agents
-        ]
-        stream = await self._session.query(*keys).execute(on_error=ErrorStrategy.IN_STREAM)
+            keys.append(key)
+            key_to_agent[(key.namespace, key.set_name, key.value)] = agent_id
+        stream = await (
+            self._session.query(*keys).respond_all_keys().execute(on_error=ErrorStrategy.IN_STREAM)
+        )
         merged: list[tuple[int, str, int, Any]] = []
         index = 0
-        async for agent_id, result in _zip_results(agents, stream):
+        async for agent_id, result in _zip_results(key_to_agent, stream):
             if result.result_code == ResultCode.KEY_NOT_FOUND_ERROR:
                 continue
             if result.result_code != ResultCode.OK:
@@ -288,12 +289,12 @@ def _parse_seed(seed: str) -> tuple[str, int]:
         raise ValueError(f"Invalid Aerospike seed port in {seed!r}") from exc
 
 
-async def _zip_results(agents: list[str], stream: Any) -> Any:
-    index = 0
+async def _zip_results(
+    key_to_agent: dict[tuple[str, str, str], str], stream: Any
+) -> Any:
     async for result in stream:
-        if index >= len(agents):
-            raise RuntimeError("Aerospike returned more batch results than requested")
-        yield agents[index], result
-        index += 1
-    if index != len(agents):
-        raise RuntimeError("Aerospike returned fewer batch results than requested")
+        key = result.key
+        agent_id = key_to_agent.get((key.namespace, key.set_name, key.value))
+        if agent_id is None:
+            raise RuntimeError(f"Aerospike returned unexpected batch key {key!r}")
+        yield agent_id, result

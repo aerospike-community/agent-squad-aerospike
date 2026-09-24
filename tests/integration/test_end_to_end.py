@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 import asyncio
 from uuid import uuid4
@@ -7,7 +6,7 @@ import pytest
 from aerospike_sdk import Client
 from agent_squad.types import ConversationMessage, ParticipantRole
 
-from agent_squad_aerospike import AerospikeChatStorage, AerospikeConfig
+from agent_squad_aerospike import AerospikeChatStorage, AerospikeConfig, DirectoryFullError
 
 
 @pytest.mark.integration
@@ -107,3 +106,43 @@ async def test_process_restart_and_sliding_ttl() -> None:
         await asyncio.sleep(4.0)
         assert await restarted.fetch_chat("u", session_id, "a") == []
         assert await restarted.fetch_all_chats("u", session_id) == []
+
+
+@pytest.mark.integration
+async def test_adversarial_role_value_suppression_still_holds() -> None:
+    session_id = uuid4().hex
+    adversarial_role = 'user" or "1"=="1'
+    first = ConversationMessage(adversarial_role, [{"text": "first"}])
+    second = ConversationMessage(adversarial_role, [{"text": "second"}])
+    async with Client("localhost:3000") as client:
+        storage = AerospikeChatStorage(
+            client.create_session(),
+            AerospikeConfig(hard_history_limit=4),
+        )
+        assert await storage.save_chat_message("u", session_id, "alpha", first)
+        assert not await storage.save_chat_message("u", session_id, "alpha", second)
+
+
+@pytest.mark.integration
+async def test_adversarial_agent_id_does_not_crash_or_bypass_membership_guard() -> None:
+    session_id = uuid4().hex
+    adversarial_agent = 'agent"bad'
+    async with Client("localhost:3000") as client:
+        storage = AerospikeChatStorage(
+            client.create_session(),
+            AerospikeConfig(max_agents_per_session=1),
+        )
+        assert await storage.save_chat_message(
+            "u",
+            session_id,
+            adversarial_agent,
+            ConversationMessage(ParticipantRole.USER, [{"text": "ok"}]),
+        )
+        # A second, different agent should be rejected as full.
+        with pytest.raises(DirectoryFullError):
+            await storage.save_chat_message(
+                "u",
+                session_id,
+                "other",
+                ConversationMessage(ParticipantRole.USER, [{"text": "too many"}]),
+            )

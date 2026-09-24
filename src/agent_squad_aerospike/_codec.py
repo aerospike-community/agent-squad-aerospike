@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 import base64
 import json
@@ -7,7 +6,7 @@ from typing import Any
 
 from agent_squad.types import ParticipantRole, TimestampedMessage
 
-from .exceptions import MessageTooLargeError, UnknownMessageSchemaError
+from .exceptions import UnknownMessageSchemaError
 
 SCHEMA_VERSION = 1
 
@@ -37,7 +36,6 @@ def encode_message(
     *,
     role: str,
     timestamp: int | None = None,
-    max_bytes: int | None = None,
 ) -> bytes:
     payload = {
         "citations": _to_json(getattr(message, "citations", None)),
@@ -46,17 +44,12 @@ def encode_message(
         "timestamp": timestamp or getattr(message, "timestamp", None) or int(time.time() * 1000),
         "version": SCHEMA_VERSION,
     }
-    encoded = json.dumps(
+    return json.dumps(
         payload,
         ensure_ascii=False,
         separators=(",", ":"),
         sort_keys=True,
     ).encode()
-    if max_bytes is not None and len(encoded) > max_bytes:
-        raise MessageTooLargeError(
-            f"Encoded message is {len(encoded)} bytes; configured limit is {max_bytes}"
-        )
-    return encoded
 
 
 def decode_message(encoded: bytes) -> TimestampedMessage:

@@ -17,7 +17,6 @@ Usage:
     python examples/local_study_room/local_study_room.py --session room-1 --inspect
 """
 
-from __future__ import annotations
 
 import argparse
 import asyncio

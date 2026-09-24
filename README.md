@@ -31,7 +31,9 @@ async with await AerospikeChatStorage.connect(config) as storage:
 
 ## Configuration
 
-Defaults use seed `127.0.0.1:3000`, namespace `test`, sets `as_chats` and `as_agents`, a 1,000-message hard history cap, 256 KiB encoded-message limit, 8 MiB configured record limit, 1,000 agents per directory, and 10,000 process-local membership confirmations. The socket and total timeout defaults are 5 and 30 seconds. Non-idempotent writes use zero retries.
+Defaults use seed `127.0.0.1:3000`, namespace `test`, sets `as_chats` and `as_agents`, a 1,000-message hard history cap, 1,000 agents per directory, and 10,000 process-local membership confirmations. The socket and total timeout defaults are 5 and 30 seconds. Non-idempotent writes use zero retries.
+
+There is no client-side encoded-message or conversation-record byte limit, matching Agent Squad's reference `DynamoDbChatStorage`, which relies entirely on its backing store's own size rejection. An oversized conversation record is rejected by the Aerospike server's configured `write-block-size` (1 MiB by default on Community Edition) and surfaced as `ConversationTooLargeError`; size it via `hard_history_limit` and typical message size for your workload.
 
 Adapter TTL is disabled by default, deferring to namespace policy. A positive `ttl_seconds` requires a positive `membership_refresh_seconds` strictly below the TTL. Credentials are optional runtime settings; never put secrets in source control.
 
@@ -39,7 +41,7 @@ Adapter TTL is disabled by default, deferring to namespace policy. A positive `t
 
 Each `(user_id, session_id, agent_id)` has one conversation record. Each `(user_id, session_id)` has one bounded directory record mapping agent IDs to ordering metadata. Domain-separated, length-prefixed identifier tuples are hashed into primary keys. Fixed sets, primary-key reads, and batch reads avoid scans and secondary indexes.
 
-Conversation saves use one atomic server-side operation to check the persisted last role, append complete versioned messages, trim only oldest whole messages, update metadata, and apply optional sliding TTL. Caller limits can only lower the hard cap and odd limits round down. Complete content blocks, binary data, citations, Unicode, roles, and timestamps round-trip without truncation. Oversized messages raise `MessageTooLargeError`; server record overflow raises `ConversationTooLargeError`.
+Conversation saves use one atomic server-side operation to check the persisted last role, append complete versioned messages, trim only oldest whole messages, update metadata, and apply optional sliding TTL. Caller limits can only lower the hard cap and odd limits round down. Complete content blocks, binary data, citations, Unicode, roles, and timestamps round-trip without truncation. A record that would exceed the server's configured `write-block-size` raises `ConversationTooLargeError`.
 
 Directory registration happens before a conversation save when membership is unconfirmed. Confirmed memberships use a bounded LRU-style process cache, concurrent misses are coalesced, and positive-TTL confirmations refresh before directory expiry. Cache eviction or process restart safely repeats the idempotent registration. A failed registration is not cached. The two records are not transactionally coupled: readers tolerate a registered directory member whose conversation is absent. Directories are bounded; sharding is deferred to a separate change if measured contention requires it.
 

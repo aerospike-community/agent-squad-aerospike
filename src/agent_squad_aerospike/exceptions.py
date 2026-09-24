@@ -2,10 +2,6 @@ class AgentSquadAerospikeError(Exception):
     pass
 
 
-class MessageTooLargeError(AgentSquadAerospikeError, ValueError):
-    pass
-
-
 class ConversationTooLargeError(AgentSquadAerospikeError):
     pass
 

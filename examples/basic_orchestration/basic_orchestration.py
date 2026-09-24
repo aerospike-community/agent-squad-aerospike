@@ -10,7 +10,6 @@ Usage:
     python examples/basic_orchestration/basic_orchestration.py
 """
 
-from __future__ import annotations
 
 import asyncio
 import sys

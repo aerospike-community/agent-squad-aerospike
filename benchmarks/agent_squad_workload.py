@@ -1,6 +1,5 @@
 """Agent Squad chat-storage benchmark workload."""
 
-from __future__ import annotations
 
 import argparse
 import asyncio
