@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 from dataclasses import dataclass
 
@@ -10,8 +9,6 @@ class AerospikeConfig:
     conversation_set: str = "as_chats"
     directory_set: str = "as_agents"
     hard_history_limit: int = 1_000
-    max_message_bytes: int = 256 * 1024
-    max_record_bytes: int = 8 * 1024 * 1024
     max_agents_per_session: int = 1_000
     membership_cache_capacity: int = 10_000
     ttl_seconds: int | None = None
@@ -34,8 +31,6 @@ class AerospikeConfig:
         if self.hard_history_limit < 2 or self.hard_history_limit % 2:
             raise ValueError("hard_history_limit must be a positive even value")
         positive = {
-            "max_message_bytes": self.max_message_bytes,
-            "max_record_bytes": self.max_record_bytes,
             "max_agents_per_session": self.max_agents_per_session,
             "membership_cache_capacity": self.membership_cache_capacity,
             "socket_timeout_ms": self.socket_timeout_ms,
@@ -44,8 +39,6 @@ class AerospikeConfig:
         for name, value in positive.items():
             if value <= 0:
                 raise ValueError(f"{name} must be positive")
-        if self.max_message_bytes >= self.max_record_bytes:
-            raise ValueError("max_message_bytes must be smaller than max_record_bytes")
         if self.socket_timeout_ms > self.total_timeout_ms:
             raise ValueError("socket_timeout_ms must not exceed total_timeout_ms")
         if self.max_write_retries < 0:

@@ -6,7 +6,6 @@ from .exceptions import (
     AmbiguousWriteError,
     ConversationTooLargeError,
     DirectoryFullError,
-    MessageTooLargeError,
     UnknownMessageSchemaError,
 )
 from .storage import AerospikeChatStorage
@@ -18,6 +17,5 @@ __all__ = [
     "AmbiguousWriteError",
     "ConversationTooLargeError",
     "DirectoryFullError",
-    "MessageTooLargeError",
     "UnknownMessageSchemaError",
 ]

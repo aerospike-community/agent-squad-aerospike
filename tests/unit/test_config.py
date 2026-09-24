@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 from dataclasses import FrozenInstanceError
 
@@ -14,7 +13,6 @@ def test_defaults_are_ce_compatible_and_bounded() -> None:
     assert len(config.conversation_set) <= 15
     assert len(config.directory_set) <= 15
     assert config.hard_history_limit == 1_000
-    assert config.max_message_bytes < config.max_record_bytes
     assert config.max_agents_per_session > 0
     assert config.membership_cache_capacity > 0
     assert config.ttl_seconds is None
@@ -37,8 +35,6 @@ def test_configuration_is_immutable() -> None:
         ("directory_set", "x" * 16),
         ("hard_history_limit", 0),
         ("hard_history_limit", 3),
-        ("max_message_bytes", 0),
-        ("max_record_bytes", 0),
         ("max_agents_per_session", 0),
         ("membership_cache_capacity", 0),
         ("socket_timeout_ms", 0),
@@ -49,11 +45,6 @@ def test_configuration_is_immutable() -> None:
 def test_invalid_bounds_are_rejected(field: str, value: object) -> None:
     with pytest.raises(ValueError):
         AerospikeConfig(**{field: value})  # type: ignore[arg-type]
-
-
-def test_message_limit_must_fit_record_limit() -> None:
-    with pytest.raises(ValueError):
-        AerospikeConfig(max_message_bytes=100, max_record_bytes=99)
 
 
 def test_positive_ttl_requires_safe_early_membership_refresh() -> None:

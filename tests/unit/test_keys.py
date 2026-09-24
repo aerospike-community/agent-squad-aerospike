@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 from agent_squad_aerospike._keys import conversation_key, directory_key
 

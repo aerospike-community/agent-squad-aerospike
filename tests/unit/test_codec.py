@@ -1,11 +1,10 @@
-from __future__ import annotations
 
 import json
 
 import pytest
 from agent_squad.types import ConversationMessage, ParticipantRole, TimestampedMessage
 
-from agent_squad_aerospike import MessageTooLargeError, UnknownMessageSchemaError
+from agent_squad_aerospike import UnknownMessageSchemaError
 from agent_squad_aerospike._codec import decode_message, encode_message
 
 
@@ -57,7 +56,9 @@ def test_unknown_schema_version_is_rejected() -> None:
         decode_message(encoded)
 
 
-def test_oversized_message_is_rejected_after_encoding() -> None:
+def test_encode_message_has_no_client_side_size_limit() -> None:
+    # No max_bytes parameter exists: encode_message never rejects a message for size.
+    # Oversized conversations are rejected by the Aerospike server, not the client.
     message = ConversationMessage(ParticipantRole.USER, [{"text": "too large"}])
-    with pytest.raises(MessageTooLargeError):
-        encode_message(message, role="user", timestamp=1, max_bytes=10)
+    encoded = encode_message(message, role="user", timestamp=1)
+    assert json.loads(encoded)["content"] == [{"text": "too large"}]

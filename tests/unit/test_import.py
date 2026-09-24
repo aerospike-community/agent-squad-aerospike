@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 from typing import get_type_hints
 
@@ -17,7 +16,6 @@ def test_package_imports() -> None:
         "AmbiguousWriteError",
         "ConversationTooLargeError",
         "DirectoryFullError",
-        "MessageTooLargeError",
         "UnknownMessageSchemaError",
     } == set(agent_squad_aerospike.__all__)
 
