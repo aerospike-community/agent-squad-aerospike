@@ -1,0 +1,11 @@
+# Implementation notes
+
+## Aerospike Developer SDK 0.9.0a5
+
+The Community Edition spike confirms that one `session.upsert(key)` write segment can combine a filter expression, `list_append_items`, `list_trim`, scalar metadata writes, and record expiration. The filter is built with the programmatic `aerospike_sdk.Exp` API so the role value is never interpolated into AEL text: it checks `not($.msgs.exists()) or $.msgs.count() == 0 or $.msgs.[-1].role != <role>`. `list_trim(-limit, limit)` retains whole newest entries after the append.
+
+Single-key failures raise `AerospikeError`; batch failures are carried by each `RecordResult`. Result codes are values from the SDK's public `aerospike_async.ResultCode` dependency rather than Python enums with a `name` attribute. `RecordResult.in_doubt` must be checked before result-code translation. `FILTERED_OUT` represents intentional role suppression, `KEY_NOT_FOUND_ERROR` is tolerated only where absence is valid, and `RECORD_TOO_BIG` maps to the package conversation-size exception.
+
+The package exposes no client-side encoded-message or conversation-record byte limit (no `max_message_bytes`/`max_record_bytes` config field, no `MessageTooLargeError`). This matches Agent Squad's reference `DynamoDbChatStorage`, which has no equivalent client-side size configuration and relies entirely on its backing store's own item-size rejection. An oversized `msgs` bin is rejected purely by the Aerospike server's `write-block-size` and surfaced as `ConversationTooLargeError` from `RECORD_TOO_BIG`, exactly as any other record-too-big failure already was. An earlier version of this package carried both fields plus a construction-time advisory warning; that approach was superseded because `max_record_bytes` was never read at runtime and `max_message_bytes` only ever guarded the narrow single-oversized-message case, not the more common cumulative-size case — see the OpenSpec change `fix-agent-squad-pr-review-findings`'s design doc for the fuller rationale, including why an exact client-side "remaining space" check was investigated and found infeasible with this SDK version.
+
+The SDK's default behavior retries writes. Non-idempotent conversation appends must therefore use a derived behavior with zero write retries before release; directory map upserts may use independent retry behavior because they are idempotent.
